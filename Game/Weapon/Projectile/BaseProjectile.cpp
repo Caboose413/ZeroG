@@ -63,7 +63,7 @@ void ABaseProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 	bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	//Spawn a Particle when we hit something.
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, HitLocation, HitNormal.Rotation());
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, HitLocation, HitNormal.Rotation(), FVector(2.0f));
 
 	//Call out Custom destroy function.
 	DestroyProjectile();
