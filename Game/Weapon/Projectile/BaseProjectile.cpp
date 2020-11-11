@@ -29,6 +29,8 @@ ABaseProjectile::ABaseProjectile()
 	ProMovement->InitialSpeed = 30000.0f;
 	ProMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProMesh->SetGenerateOverlapEvents(false);
+	ProCol->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	
 }
 
@@ -38,6 +40,9 @@ void ABaseProjectile::BeginPlay()
 	Super::BeginPlay();
 	FTimerHandle DestroyHandle;
 	GetWorld()->GetTimerManager().SetTimer(DestroyHandle, this, &ABaseProjectile::DestroyProjectile, 3.0f, true);
+
+	FTimerHandle ColTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(ColTimerHandle, this, &ABaseProjectile::ActivateCollision, GetWorld()->GetDeltaSeconds(), true);
 }
 
 // Called every frame
@@ -54,7 +59,6 @@ void ABaseProjectile::DestroyProjectile()
 	Destroy();	
 }
 
-
 void ABaseProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp,
 	bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -65,3 +69,7 @@ void ABaseProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 	DestroyProjectile();
 }
 
+void ABaseProjectile::ActivateCollision()
+{
+	ProCol->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}

@@ -70,6 +70,11 @@ void ABaseWeapon::ExeShoot()
 	//Spawn and create a Reference to the Projectile.
 	AActor* Pro = GetWorld()->SpawnActor<ABaseProjectile>(Projectile, WepTrans);
 
+	//Spawn Projectile Deferred so we can set the collision to Ignore the Owner and void Hitting ourself.
+	//AActor* Pro = (UGameplayStatics::BeginDeferredActorSpawnFromClass(this, Projectile, WepTrans));
+	//Cast<ABaseProjectile>(Pro)->ProCol->MoveIgnoreActors.Add(GetOwner());
+	//UGameplayStatics::FinishSpawningActor(Pro, WepTrans);
+	
 	//Get the Initial Speed of our Projectile.
 	const float InitSpeed = Cast<ABaseProjectile>(Pro)->ProMovement->InitialSpeed;
 
