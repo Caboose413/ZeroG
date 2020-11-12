@@ -71,6 +71,12 @@ public:
 	UProjectileMovementComponent* ProMovement;
 
 	/**
+	* The Amount of Damage the Projectile should apply.
+	*/
+	UPROPERTY(EditAnywhere)	
+	TSubclassOf<UDamageType> ProDamageType;
+	
+	/**
 	* Particle which should spawn if the Projectile hit's a target.
 	*/
 	UPROPERTY(EditAnywhere)

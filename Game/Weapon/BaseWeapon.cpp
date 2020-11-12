@@ -9,16 +9,20 @@
 ABaseWeapon::ABaseWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	RPM = 1500.0f;
 
+
+	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	RootComponent = RootScene;
+	
 	//Create our Weapon Static mesh model.
 	WepMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProMesh"));
-	RootComponent = WepMesh;
+	WepMesh->SetupAttachment(RootScene);
 
 	//Create a Helper for getting the actual spawn location.
 	SpawnLoc = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnLoc"));
-	SpawnLoc->SetupAttachment(WepMesh);
+	SpawnLoc->SetupAttachment(RootScene);
 }
 
 // Called when the game starts or when spawned

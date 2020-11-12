@@ -41,7 +41,28 @@ void UWeaponManager::BeginPlay()
 void UWeaponManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	const FVector OwnerLoc = GetOwner()->GetActorLocation();
+	const FVector OwnerForward = GetOwner()->GetActorForwardVector();
+	const FVector LineStart = OwnerForward * 1000.0f + OwnerLoc;
+	const FVector LineEnd = OwnerLoc + (OwnerForward * 900000.0f);
 
+	FHitResult LineHit;
+	GetWorld()->LineTraceSingleByChannel(LineHit, LineStart, LineEnd, ECC_Visibility);
+
+	if (LineHit.bBlockingHit)
+	{
+		AimLocation = LineHit.Location;
+	}
+	else
+	{
+		AimLocation = LineEnd;
+	}
+	
+	for (auto& Weapon : WeaponGroup)
+	{
+		Weapon.SetRotation(AimLocation);
+	}
+	
 	// ...
 }
 

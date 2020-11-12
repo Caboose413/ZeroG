@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ExeShoot(FString Group, bool Shooting);
 
+	UPROPERTY(BlueprintReadWrite)
+	FVector AimLocation;
+	
 private:
 
 	UPROPERTY()

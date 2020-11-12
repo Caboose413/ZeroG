@@ -61,6 +61,14 @@ struct FWeaponGroup
 			Wep->ShootSlot(Shooting);
 		}
 	}
+	void SetRotation(FVector AimLocation)
+	{
+		for(auto& Wep : WeaponSlots)
+		{
+			FVector AimNormal = (AimLocation - Wep->GetComponentLocation()).GetSafeNormal();
+			Wep->SetWorldRotation(AimNormal.Rotation());
+		}
+	}
 };
 
 

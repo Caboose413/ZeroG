@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/ArrowComponent.h"
+#include "Components/SceneComponent.h"
 
 //ZeroG
 #include "Projectile/BaseProjectile.h"
@@ -42,6 +43,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABaseProjectile> Projectile;
 
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* RootScene;
+	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* WepMesh;
 	

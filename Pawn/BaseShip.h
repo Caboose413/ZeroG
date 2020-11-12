@@ -7,10 +7,14 @@
 #include "GameFramework/Pawn.h"
 
 //ZeroG
+#include "ZeroG/Components/HealthManager.h"
+#include "ZeroG/Game/ZeroGInterface.h"
+#include "ZeroG/Game/Weapon/WeaponManager.h"
+
 #include "BaseShip.generated.h"
 
 UCLASS()
-class ZEROG_API ABaseShip : public APawn
+class ZEROG_API ABaseShip : public APawn, public IZeroGInterface
 {
 	GENERATED_BODY()
 
@@ -53,15 +57,30 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Controll")
 	void Heave(const float Input);
 
+	UFUNCTION()
+	virtual void OnSendDeath() override;
 
-
+	UFUNCTION()
+	void DestroyShip();
 
 	
 public:
+
+
+	
+
+
+
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ShipModel;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UWeaponManager* WeaponManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UHealthManager* HealthManager;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ThrustStrength;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -79,8 +98,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	float HeaveStrength;
 
+	/**
+	* Particle which should spawn when the ship explodes.
+	*/
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* ExplosionParticle;
 	
 private:
+
 
 
 

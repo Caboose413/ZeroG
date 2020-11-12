@@ -9,7 +9,7 @@
 ABaseProjectile::ABaseProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	//Create a Box Collision.
 	ProCol = CreateDefaultSubobject<UBoxComponent>(TEXT("ProCol"));
@@ -64,7 +64,11 @@ void ABaseProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPri
 {
 	//Spawn a Particle when we hit something.
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, HitLocation, HitNormal.Rotation(), FVector(2.0f));
+	FDamageEvent DmgEvent;
+	Other->TakeDamage(Damage, DmgEvent, this->GetInstigatorController(), GetOwner());
 
+	//Apply Damage to the Hit actor.
+	UGameplayStatics::ApplyDamage(Other, Damage, this->GetInstigatorController(), GetOwner(), ProDamageType);
 	//Call out Custom destroy function.
 	DestroyProjectile();
 }

@@ -2,6 +2,7 @@
 
 
 #include "BaseShip.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseShip::ABaseShip()
@@ -14,8 +15,11 @@ ABaseShip::ABaseShip()
 	//Set the Ship model to our Root Component.
 	RootComponent = ShipModel;
 
-	
+	WeaponManager = CreateDefaultSubobject<UWeaponManager>(TEXT("WeaponManager"));
+	HealthManager = CreateDefaultSubobject<UHealthManager>(TEXT("HealthManager"));
 
+
+	
 	//Set Default Values
 	ShipModel->SetSimulatePhysics(true);
 	
@@ -26,6 +30,8 @@ ABaseShip::ABaseShip()
 	SurgeStrength = 1.0f;
 	SwayStrength = 0.3f;
 	HeaveStrength = 0.3f;
+
+	
 	
 }
 
@@ -33,13 +39,13 @@ ABaseShip::ABaseShip()
 void ABaseShip::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ABaseShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 
 }
 
@@ -117,4 +123,18 @@ void ABaseShip::Heave(const float Input)
 	const FVector ShipUp = ShipModel->GetUpVector();
 	AddThrust(ShipUp * Input, HeaveStrength);
 }
+
+void ABaseShip::OnSendDeath()
+{
+	DestroyShip();
+	//UE_LOG(LogTemp, Warning, TEXT("d1"));
+}
+
+void ABaseShip::DestroyShip()
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticle, GetOwner()->GetActorLocation(), FRotator(), FVector(25.0f));
+	Destroy();
+}
+
+
 
