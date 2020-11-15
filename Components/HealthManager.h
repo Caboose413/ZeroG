@@ -46,19 +46,22 @@ public:
 	
 private:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	TScriptInterface<IZeroGInterface> GInterface;
 	
 	/**
 	* The Max amount of health.
 	*/
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	float MaxHealth;
 
 	/**
 	* The Current amount of health.
 	*/
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	float CurHealth;
 
+	UPROPERTY(EditAnywhere)
+	bool CanTakeDmg;
+	
 };

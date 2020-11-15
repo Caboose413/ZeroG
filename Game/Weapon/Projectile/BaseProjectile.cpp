@@ -26,12 +26,9 @@ ABaseProjectile::ABaseProjectile()
 	//Set Default Values
 	
 	Damage = 10.0f;
-	ProMovement->InitialSpeed = 30000.0f;
 	ProMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProMesh->SetGenerateOverlapEvents(false);
 	ProCol->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	
 }
 
 // Called when the game starts or when spawned

@@ -23,6 +23,10 @@ ABaseWeapon::ABaseWeapon()
 	//Create a Helper for getting the actual spawn location.
 	SpawnLoc = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnLoc"));
 	SpawnLoc->SetupAttachment(RootScene);
+
+	ProSpeed = 85000.0f;
+
+	WeaponSpread = 10.0f;
 }
 
 // Called when the game starts or when spawned
@@ -63,7 +67,7 @@ void ABaseWeapon::ShootWeapon(bool Shooting)
 void ABaseWeapon::ExeShoot()
 {
 	//Get the Owner Velocity.
-	const FVector OwnerVel = GetOwner()->GetVelocity();
+	const FVector OwnerVel = GetVelocity();
 
 	//Get the Weapons Transform.
 	FTransform WepTrans = SpawnLoc->GetComponentTransform();
@@ -72,21 +76,29 @@ void ABaseWeapon::ExeShoot()
 	WepTrans.SetLocation(WepTrans.GetLocation() - OwnerVel / 100.0f);
 
 	//Spawn and create a Reference to the Projectile.
-	AActor* Pro = GetWorld()->SpawnActor<ABaseProjectile>(Projectile, WepTrans);
+	//AActor* Pro = GetWorld()->SpawnActor<ABaseProjectile>(Projectile, WepTrans);
 
-	//Spawn Projectile Deferred so we can set the collision to Ignore the Owner and void Hitting ourself.
-	//AActor* Pro = (UGameplayStatics::BeginDeferredActorSpawnFromClass(this, Projectile, WepTrans));
-	//Cast<ABaseProjectile>(Pro)->ProCol->MoveIgnoreActors.Add(GetOwner());
-	//UGameplayStatics::FinishSpawningActor(Pro, WepTrans);
+	//Spawn Projectile Deferred so we can set some default values.
+	AActor* Pro = (UGameplayStatics::BeginDeferredActorSpawnFromClass(this, Projectile, WepTrans));
+	Cast<ABaseProjectile>(Pro)->ProMovement->InitialSpeed = ProSpeed;
 	
-	//Get the Initial Speed of our Projectile.
-	const float InitSpeed = Cast<ABaseProjectile>(Pro)->ProMovement->InitialSpeed;
+	FVector Forward = GetActorForwardVector();
+	
+	FVector RandomRot;
+	RandomRot.X = FMath::FRandRange(-WeaponSpread, WeaponSpread);
+	RandomRot.Y = FMath::FRandRange(-WeaponSpread, WeaponSpread);
+	RandomRot.Z = FMath::FRandRange(-WeaponSpread, WeaponSpread);
 
+	Forward += (RandomRot * 0.001f);
+	
 	//Apply owner Velocity to the Projectile so the Spawned projectile matches the ships speed.
-	const FVector AdjustedVelocity = OwnerVel + (GetActorForwardVector() * InitSpeed);
+	const FVector AdjustedVelocity = OwnerVel + (Forward * ProSpeed);
 
+	//Spawn the Actual Projectile;
+	UGameplayStatics::FinishSpawningActor(Pro, WepTrans);
+	
 	//Apply the Adjusted Velocity.
-	Cast<ABaseProjectile>(Pro)->ProMovement->Velocity = AdjustedVelocity;
+    Cast<ABaseProjectile>(Pro)->ProMovement->Velocity = AdjustedVelocity;
 }
 
 //Function to set the Owner/OwningShip of this weapon.

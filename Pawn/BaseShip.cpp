@@ -3,6 +3,7 @@
 
 #include "BaseShip.h"
 #include "Kismet/GameplayStatics.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ABaseShip::ABaseShip()
@@ -31,8 +32,9 @@ ABaseShip::ABaseShip()
 	SwayStrength = 0.3f;
 	HeaveStrength = 0.3f;
 
-	
-	
+	ScanArea = 10.0f;
+
+	LastRandomTarget = -1;
 }
 
 // Called when the game starts or when spawned
@@ -45,8 +47,6 @@ void ABaseShip::BeginPlay()
 void ABaseShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-
 }
 
 // Called to bind functionality to input
@@ -54,7 +54,10 @@ void ABaseShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//Setup Mouse and Keyboard Input events.
+	//Setup Keyboard Input events.
+	PlayerInputComponent->BindAction("CycleTarget", IE_Pressed, this, &ABaseShip::CycleTarget);
+	
+	//Setup Mouse Axis events.
 	PlayerInputComponent->BindAxis("Yaw", this, &ABaseShip::Yaw);
 	PlayerInputComponent->BindAxis("Pitch", this, &ABaseShip::Pitch);
 	PlayerInputComponent->BindAxis("Roll", this, &ABaseShip::Roll);
@@ -122,6 +125,48 @@ void ABaseShip::Heave(const float Input)
 	//Create a Vector which points Up.
 	const FVector ShipUp = ShipModel->GetUpVector();
 	AddThrust(ShipUp * Input, HeaveStrength);
+}
+
+void ABaseShip::CycleTarget()
+{
+	TArray<AActor*> TargetsInCone;
+	const FVector OwnerForward = GetActorForwardVector();
+	const FVector OwnerLocation = GetActorLocation();
+	
+	for (TActorIterator<ABaseShip> Ship(GetWorld()); Ship; ++Ship)
+	{
+		if (*Ship == this || Ship->IsPendingKillPending())
+		{
+			continue;
+		}
+		//UE_LOG(LogTemp, Warning, TEXT("Ship %s"), *Ship->GetName());
+		const FVector TargetNormal = (Ship->GetActorLocation() - OwnerLocation).GetSafeNormal();
+		const float TargetDot = FVector::DotProduct(OwnerForward, TargetNormal);
+		
+		const float DotToDegree = FMath::Lerp(180.0f, 0.0f, TargetDot);
+		
+		//UE_LOG(LogTemp, Warning, TEXT("Dot %f Deg %f"),TargetDot, DotToDegree);
+		if (DotToDegree < ScanArea)
+		{
+			TargetsInCone.Add(*Ship);
+		}
+	}
+
+	TargetsInCone.Remove(WeaponManager->GetTarget());
+	
+	const int RandomTarget = FMath::RandHelper(TargetsInCone.Num());
+
+	if (TargetsInCone.Num() > 0)
+	{
+		WeaponManager->SetTarget(TargetsInCone[RandomTarget]);
+		LastRandomTarget = RandomTarget;
+	}
+	else
+	{
+		WeaponManager->ClearTarget();
+	}
+
+	TargetsInCone.Empty();
 }
 
 void ABaseShip::OnSendDeath()

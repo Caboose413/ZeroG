@@ -45,6 +45,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ExeShoot(FString Group, bool Shooting);
 
+	UFUNCTION()
+	void SetTarget(AActor* NewTarget);
+
+	UFUNCTION()
+	AActor* GetTarget() const;
+
+	UFUNCTION()
+	void ClearTarget();
+	
 	UPROPERTY(BlueprintReadWrite)
 	FVector AimLocation;
 	
@@ -54,4 +63,7 @@ private:
 	TArray<FWeaponGroup> WeaponGroup;
 	
 	FWeaponGroup EmptyGroup;
+
+	UPROPERTY()
+	AActor* TargetActor;
 };

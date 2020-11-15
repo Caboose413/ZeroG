@@ -11,6 +11,7 @@ UHealthManager::UHealthManager()
 	PrimaryComponentTick.bCanEverTick = false;
 	MaxHealth = 100.0f;
 	CurHealth = 100.0f;
+	CanTakeDmg = true;
 	// ...
 }
 
@@ -55,7 +56,10 @@ float UHealthManager::GetHealth() const
 
 void UHealthManager::TakeDmg(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
-	AddHealth(-Damage);
+	if (CanTakeDmg)
+	{
+		AddHealth(-Damage);
+	}
 }
 
 void UHealthManager::Die()

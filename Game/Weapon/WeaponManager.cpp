@@ -40,30 +40,44 @@ void UWeaponManager::BeginPlay()
 // Called every frame
 void UWeaponManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	const FVector OwnerLoc = GetOwner()->GetActorLocation();
+	const AActor* OwningShip = GetOwner();
+
+	if (!OwningShip)
+	{
+		return;
+	}
+
+	if (TargetActor)
+	{
+		if (TargetActor->IsPendingKillPending())
+		{
+			ClearTarget();
+			return;
+		}
+	}
+
+	
+	
 	const FVector OwnerForward = GetOwner()->GetActorForwardVector();
-	const FVector LineStart = OwnerForward * 1000.0f + OwnerLoc;
-	const FVector LineEnd = OwnerLoc + (OwnerForward * 900000.0f);
+	const FVector OwnerLocation = GetOwner()->GetActorLocation();
+	const FVector LineStart = OwnerForward * 1000.0f + OwnerLocation;
+	const FVector LineEnd = OwnerLocation + (OwnerForward * 900000.0f);
 
 	FHitResult LineHit;
 	GetWorld()->LineTraceSingleByChannel(LineHit, LineStart, LineEnd, ECC_Visibility);
 
-	if (LineHit.bBlockingHit)
+	FWeaponInfo WepInfo;
+	WepInfo.ShipLocation = OwnerLocation;
+	WepInfo.ShipForward = OwnerForward;
+	WepInfo.TargetActor = TargetActor;
+	WepInfo.TraceHit = LineHit;
+
+	for (auto& TheGroup : WeaponGroup)
 	{
-		AimLocation = LineHit.Location;
+		TheGroup.SetRotation(WepInfo);
 	}
-	else
-	{
-		AimLocation = LineEnd;
-	}
-	
-	for (auto& Weapon : WeaponGroup)
-	{
-		Weapon.SetRotation(AimLocation);
-	}
-	
-	// ...
+
+	AimLocation = WepInfo.CursorLocation;
 }
 
 void UWeaponManager::SetWeapon(int index, FString Group, TArray<UBaseWeaponSlot*> Weapons)
@@ -128,5 +142,20 @@ void UWeaponManager::ExeShoot(FString Group, bool Shooting)
 			TheGroup.ShootGroup(Shooting);
 		}
 	}
+}
+
+void UWeaponManager::SetTarget(AActor* NewTarget)
+{
+	TargetActor = NewTarget;
+}
+
+AActor* UWeaponManager::GetTarget() const
+{
+	return  TargetActor;
+}
+
+void UWeaponManager::ClearTarget()
+{
+	TargetActor = nullptr;
 }
 

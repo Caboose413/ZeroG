@@ -57,6 +57,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Controll")
 	void Heave(const float Input);
 
+	UFUNCTION(BlueprintCallable, Category = "Controll")
+	void CycleTarget();
+
+	
 	UFUNCTION()
 	virtual void OnSendDeath() override;
 
@@ -98,6 +102,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float HeaveStrength;
 
+	UPROPERTY(EditAnywhere)
+	float ScanArea;
+	
 	/**
 	* Particle which should spawn when the ship explodes.
 	*/
@@ -105,8 +112,8 @@ public:
 	UParticleSystem* ExplosionParticle;
 	
 private:
-
-
+	UPROPERTY()
+	int LastRandomTarget;
 
 
 	

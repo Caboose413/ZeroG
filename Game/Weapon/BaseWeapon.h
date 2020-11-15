@@ -41,6 +41,13 @@ public:
 	float RPM;
 
 	UPROPERTY(EditAnywhere)
+	float ProSpeed;
+
+	UPROPERTY(EditAnywhere)
+	float WeaponSpread;
+
+	
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABaseProjectile> Projectile;
 
 	UPROPERTY(VisibleAnywhere)
