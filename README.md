@@ -15,7 +15,7 @@ Variables:
 
 FString Group
 
-This is used to organize individual weapon groups and our ship,
+This is used to organize individual weapon groups on our ship,
 
 imagine you have one group named Primary and one Called Secondary.
 
@@ -36,6 +36,9 @@ When this function is called it will automatically loop over all weapons in the 
 
 void SetRotation(FWeaponInfo& Info)
 
-This function loops over all weapons in the Group and Sets their rotation depending on what type of Gimbal the Slot they are attached to have, we currently have 3 different Gimbals, Static, Gimbal, and Auto.
+This function loops over all weapons in the Group and Sets their rotation depending on what type of Gimbal the Slot they are attached to have,
+we currently have 3 different Gimbals, Static, Gimbal, and Auto.
 
-by putting this function directly into the struct it makes it really easy to access data and execute specific functions. instead of having to write some logic in every class, we want to rotate and shoot our weapon the data itself handles this for us.
+by putting these functions directly into the Struct it makes it really easy to access data and execute specific functions.
+instead of having to write logic in every class we want to use our weapons in to for example rotate and shoot,
+all we have todo now is to acces our Struct and execute our functions within it and the Struct itself will handle the rest for us.
