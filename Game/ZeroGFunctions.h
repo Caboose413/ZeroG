@@ -102,7 +102,7 @@ struct FWeaponGroup
 				{
 					case Static:
 					{
-						//For static weapons we only want the weapons to align to the potential hit location.
+						//For static weapons we only want the weapons to align to the potential hit distance.
 
 						//Get the Distance between the Weapons Owner and the target.
 						const float TargetDist = FVector::Dist(Info.ShipLocation, Info.TargetActor->GetActorLocation());
