@@ -1,9 +1,10 @@
 # ZeroG
  
  
-ZeroG is a Purley Portfolio project to demonstrate my coding standards and abilities.
+ZeroG is a Portfolio project to demonstrate my coding standards and abilities.
 
 Code class description.
+
 Here I will try to explain a few of the Major classes I use and why I designed them in this way.
 
 

@@ -100,7 +100,7 @@ struct FWeaponGroup
 			{	
 				switch (Wep->GimbalType)
 				{
-				case Static:
+					case Static:
 					{
 						//For static weapons we only want the weapons to align to the potential hit location.
 
@@ -117,12 +117,12 @@ struct FWeaponGroup
 						//UE_LOG(LogTemp, Warning, TEXT("Dot %f"),TargetDist);
 						break;
 					};
-				case Gimbal:
+					case Gimbal:
 					{
 						//Todo add a move able mouse cursor so we can gimbal the weapon towards it. 
-	                   break;
+						break;
 					};
-				case Auto:
+					case Auto:
 					{
 						//For auto weapon we want the weapon to aim at a predicted Location of where the target will be.
 
