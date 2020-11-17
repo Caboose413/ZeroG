@@ -46,6 +46,12 @@ public:
 	void ExeShoot(FString Group, bool Shooting);
 
 	UFUNCTION()
+	void RefreshWeaponData();
+
+	UFUNCTION()
+	FWeaponInfo& GetWeaponInfo();
+	
+	UFUNCTION()
 	void SetTarget(AActor* NewTarget);
 
 	UFUNCTION()
@@ -62,8 +68,14 @@ private:
 	UPROPERTY()
 	TArray<FWeaponGroup> WeaponGroup;
 	
+	UPROPERTY()
 	FWeaponGroup EmptyGroup;
-
+	
+	UPROPERTY()
+	FWeaponInfo WepInfo;
+	
 	UPROPERTY()
 	AActor* TargetActor;
+
+	
 };

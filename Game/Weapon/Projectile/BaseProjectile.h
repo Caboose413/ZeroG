@@ -87,6 +87,9 @@ public:
 	*/
 	UPROPERTY(EditAnywhere)
 	float Damage;
+
+	UPROPERTY(EditAnywhere)
+	float LifeTime;
 };
 
 

@@ -177,7 +177,7 @@ void ABaseShip::OnSendDeath()
 
 void ABaseShip::DestroyShip()
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticle, GetOwner()->GetActorLocation(), FRotator(), FVector(25.0f));
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticle, GetActorLocation(), FRotator(), FVector(25.0f));
 	Destroy();
 }
 

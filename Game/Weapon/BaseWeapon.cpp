@@ -4,6 +4,7 @@
 #include "BaseWeapon.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "ZeroG/Pawn/BaseShip.h"
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
@@ -48,7 +49,7 @@ void ABaseWeapon::ShootWeapon(bool Shooting)
 	if (Shooting)
 	{
 		//Calculate the delay time for the Current RPM.
-		float ShootDelay = 60.0f / RPM;
+		const float ShootDelay = 60.0f / RPM;
 
 		//Start a Timer to execute the shooting function.
 		GetWorld()->GetTimerManager().SetTimer(ShootTimer, this, &ABaseWeapon::ExeShoot, ShootDelay, true);
@@ -66,8 +67,14 @@ void ABaseWeapon::ShootWeapon(bool Shooting)
 //Loop this function with a timer to create repeating shoots.
 void ABaseWeapon::ExeShoot()
 {
+	ABaseShip* OwningShip = Cast<ABaseShip>(GetOwner());
+	if (OwningShip)
+	{
+		OwningShip->WeaponManager->RefreshWeaponData();
+	}
+
 	//Get the Owner Velocity.
-	const FVector OwnerVel = GetVelocity();
+	const FVector OwnerVel = OwningShip->GetVelocity();
 
 	//Get the Weapons Transform.
 	FTransform WepTrans = SpawnLoc->GetComponentTransform();
@@ -75,20 +82,23 @@ void ABaseWeapon::ExeShoot()
 	//Offset the Spawn Location with the Velocity so the Projectile spawns in the correct location.
 	WepTrans.SetLocation(WepTrans.GetLocation() - OwnerVel / 100.0f);
 
-	//Spawn and create a Reference to the Projectile.
-	//AActor* Pro = GetWorld()->SpawnActor<ABaseProjectile>(Projectile, WepTrans);
-
 	//Spawn Projectile Deferred so we can set some default values.
 	AActor* Pro = (UGameplayStatics::BeginDeferredActorSpawnFromClass(this, Projectile, WepTrans));
-	Cast<ABaseProjectile>(Pro)->ProMovement->InitialSpeed = ProSpeed;
+	if (!Pro)
+	{
+		return;
+	}
 	
-	FVector Forward = GetActorForwardVector();
-	
+	//Make a Random rotation to add Weapon Spread.
 	FVector RandomRot;
 	RandomRot.X = FMath::FRandRange(-WeaponSpread, WeaponSpread);
 	RandomRot.Y = FMath::FRandRange(-WeaponSpread, WeaponSpread);
 	RandomRot.Z = FMath::FRandRange(-WeaponSpread, WeaponSpread);
 
+	//Pre cache the actors forward vector.
+	FVector Forward = GetActorForwardVector();
+	
+	//Add the Random Rotation to our Forward Vector.
 	Forward += (RandomRot * 0.001f);
 	
 	//Apply owner Velocity to the Projectile so the Spawned projectile matches the ships speed.

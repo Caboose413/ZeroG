@@ -40,44 +40,7 @@ void UWeaponManager::BeginPlay()
 // Called every frame
 void UWeaponManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	const AActor* OwningShip = GetOwner();
-
-	if (!OwningShip)
-	{
-		return;
-	}
-
-	if (TargetActor)
-	{
-		if (TargetActor->IsPendingKillPending())
-		{
-			ClearTarget();
-			return;
-		}
-	}
-
-	
-	
-	const FVector OwnerForward = GetOwner()->GetActorForwardVector();
-	const FVector OwnerLocation = GetOwner()->GetActorLocation();
-	const FVector LineStart = OwnerForward * 1000.0f + OwnerLocation;
-	const FVector LineEnd = OwnerLocation + (OwnerForward * 900000.0f);
-
-	FHitResult LineHit;
-	GetWorld()->LineTraceSingleByChannel(LineHit, LineStart, LineEnd, ECC_Visibility);
-
-	FWeaponInfo WepInfo;
-	WepInfo.ShipLocation = OwnerLocation;
-	WepInfo.ShipForward = OwnerForward;
-	WepInfo.TargetActor = TargetActor;
-	WepInfo.TraceHit = LineHit;
-
-	for (auto& TheGroup : WeaponGroup)
-	{
-		TheGroup.SetRotation(WepInfo);
-	}
-
-	AimLocation = WepInfo.CursorLocation;
+	RefreshWeaponData();
 }
 
 void UWeaponManager::SetWeapon(int index, FString Group, TArray<UBaseWeaponSlot*> Weapons)
@@ -144,6 +107,56 @@ void UWeaponManager::ExeShoot(FString Group, bool Shooting)
 	}
 }
 
+void UWeaponManager::RefreshWeaponData()
+{
+	for (auto& TheGroup : WeaponGroup)
+	{
+		TheGroup.SetRotation(GetWeaponInfo());
+	}
+
+	AimLocation = GetWeaponInfo().CursorLocation;
+}
+
+FWeaponInfo& UWeaponManager::GetWeaponInfo()
+{
+	const AActor* OwningShip = GetOwner();
+	if (!OwningShip)
+	{
+		return WepInfo;
+	}
+
+	//Prepare Data for the Weapon info.
+	const FVector OwnerForward = GetOwner()->GetActorForwardVector();
+	const FVector OwnerLocation = GetOwner()->GetActorLocation();
+	const FVector LineStart = OwnerForward * 1000.0f + OwnerLocation;
+	const FVector LineEnd = OwnerLocation + (OwnerForward * 900000.0f);
+
+	//Construct Weapon info.
+	WepInfo.ShipLocation = OwnerLocation;
+	WepInfo.ShipForward = OwnerForward;
+	WepInfo.DeltaTime = GetWorld()->GetDeltaSeconds();
+	GetWorld()->LineTraceSingleByChannel(WepInfo.TraceHit, LineStart, LineEnd, ECC_Visibility);
+
+	//Return if there is no target.
+	if (!TargetActor)
+	{
+		WepInfo.TargetActor = nullptr;
+		return WepInfo;
+	}
+
+	//Clear Target and Return if the Target is about to be Destroyed.
+	if (TargetActor->IsPendingKillPending())
+	{
+		ClearTarget();
+		WepInfo.TargetActor = nullptr;
+		return WepInfo;
+	}
+
+	//Add out Target actor to the Weapon info struct and return it.
+	WepInfo.TargetActor = TargetActor;
+	return WepInfo;
+}
+
 void UWeaponManager::SetTarget(AActor* NewTarget)
 {
 	TargetActor = NewTarget;
@@ -151,7 +164,7 @@ void UWeaponManager::SetTarget(AActor* NewTarget)
 
 AActor* UWeaponManager::GetTarget() const
 {
-	return  TargetActor;
+	return TargetActor;
 }
 
 void UWeaponManager::ClearTarget()

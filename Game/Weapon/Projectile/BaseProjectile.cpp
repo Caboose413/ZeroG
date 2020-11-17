@@ -26,6 +26,7 @@ ABaseProjectile::ABaseProjectile()
 	//Set Default Values
 	
 	Damage = 10.0f;
+	LifeTime = 3.0f;
 	ProMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProMesh->SetGenerateOverlapEvents(false);
 	ProCol->SetCollisionEnabled(ECollisionEnabled::NoCollision);
