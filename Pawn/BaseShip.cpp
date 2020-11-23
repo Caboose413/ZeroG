@@ -130,29 +130,40 @@ void ABaseShip::Heave(const float Input)
 void ABaseShip::CycleTarget()
 {
 	TArray<AActor*> TargetsInCone;
+
+	//Precache values
 	const FVector OwnerForward = GetActorForwardVector();
 	const FVector OwnerLocation = GetActorLocation();
-	
-	for (TActorIterator<ABaseShip> Ship(GetWorld()); Ship; ++Ship)
+
+	//Todo Add Range check.
+	//Make an Actor Iterator to check if there is any ship within our scan angle.
+	for (TActorIterator<ABaseShip> TargetShip(GetWorld()); TargetShip; ++TargetShip)
 	{
-		if (*Ship == this || Ship->IsPendingKillPending())
+		//if Targetship is us, or pendingkillpending, or same as our current target then skip and go to the next one.
+		if (*TargetShip == this || TargetShip->IsPendingKillPending() || *TargetShip == WeaponManager->GetTarget())
 		{
 			continue;
 		}
-		//UE_LOG(LogTemp, Warning, TEXT("Ship %s"), *Ship->GetName());
-		const FVector TargetNormal = (Ship->GetActorLocation() - OwnerLocation).GetSafeNormal();
+		//UE_LOG(LogTemp, Warning, TEXT("TargetShip %s"), *TargetShip->GetName());
+
+		//Create a normal from the our ship to the target ship.
+		const FVector TargetNormal = (TargetShip->GetActorLocation() - OwnerLocation).GetSafeNormal();
+
+		//Make a dot product from the normal.
 		const float TargetDot = FVector::DotProduct(OwnerForward, TargetNormal);
-		
-		const float DotToDegree = FMath::Lerp(180.0f, 0.0f, TargetDot);
-		
+
+		//Convert a dog product to a degree value for easier use.
+		const float DotToDegree = FMath::Lerp(90.0f, 0.0f, TargetDot);
+
 		//UE_LOG(LogTemp, Warning, TEXT("Dot %f Deg %f"),TargetDot, DotToDegree);
+
+		//If the target ship is within our scan area add it to the TargetsInCone array.
 		if (DotToDegree < ScanArea)
 		{
-			TargetsInCone.Add(*Ship);
+			TargetsInCone.Add(*TargetShip);
 		}
 	}
 
-	TargetsInCone.Remove(WeaponManager->GetTarget());
 	
 	const int RandomTarget = FMath::RandHelper(TargetsInCone.Num());
 
